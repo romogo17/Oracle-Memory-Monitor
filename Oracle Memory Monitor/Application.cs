@@ -15,7 +15,7 @@ namespace Oracle_Memory_Monitor
         public Application()
         {
             InitializeComponent();
-            InitChart();
+            InitChart(GetSgaSize());
         }
     }
 }

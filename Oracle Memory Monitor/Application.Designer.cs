@@ -5,6 +5,8 @@
     using LiveCharts;
     using LiveCharts.Configurations;
     using LiveCharts.Wpf;
+    using System.Data.OracleClient;
+    using System.Data;
 
     partial class Application
     {
@@ -35,26 +37,23 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Application));
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.myChart = new LiveCharts.WinForms.CartesianChart();
             this.opcionesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cambiarHWMToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bitacoraDeErroresToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pruebasToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exigirMemoriaToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.myChart = new LiveCharts.WinForms.CartesianChart();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip1
+            // myChart
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.opcionesToolStripMenuItem,
-            this.pruebasToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(764, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            this.myChart.Location = new System.Drawing.Point(12, 27);
+            this.myChart.Name = "myChart";
+            this.myChart.Size = new System.Drawing.Size(743, 373);
+            this.myChart.TabIndex = 1;
+            this.myChart.Text = "cartesianChart1";
             // 
             // opcionesToolStripMenuItem
             // 
@@ -91,19 +90,22 @@
             this.exigirMemoriaToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.exigirMemoriaToolStripMenuItem.Text = "Exigir Memoria";
             // 
-            // myChart
+            // menuStrip1
             // 
-            this.myChart.Location = new System.Drawing.Point(12, 27);
-            this.myChart.Name = "myChart";
-            this.myChart.Size = new System.Drawing.Size(740, 365);
-            this.myChart.TabIndex = 1;
-            this.myChart.Text = "cartesianChart1";
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.opcionesToolStripMenuItem,
+            this.pruebasToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(775, 24);
+            this.menuStrip1.TabIndex = 0;
+            this.menuStrip1.Text = "menuStrip1";
             // 
             // Application
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(764, 404);
+            this.ClientSize = new System.Drawing.Size(775, 412);
             this.Controls.Add(this.myChart);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -121,8 +123,7 @@
 
         #endregion
 
-
-        private void InitChart()
+        private void InitChart(decimal sgaSize)
         {
             var mapper = Mappers.Xy<MeasureModel>()
                 .X(model => model.DateTime.Ticks)   //use DateTime.Ticks as X
@@ -137,7 +138,7 @@
             {
                 new LineSeries
                 {
-                    Title  = "Carga de Memoria",
+                    Title  = "Carga de Memoria (MB)",
                     Values = ChartValues,
                     PointGeometrySize = 9,
                     StrokeThickness = 3
@@ -155,9 +156,12 @@
             });
             myChart.AxisY.Add(new Axis
             {
-                Title = "Consumo de Memoria",
+                Title = "Consumo de Memoria (MB)",
                 DisableAnimations = true,
             });
+
+            myChart.AxisY[0].MinValue = 0;
+            myChart.AxisY[0].MaxValue = System.Convert.ToDouble(sgaSize);
 
             SetAxisLimits(System.DateTime.Now);
 
@@ -172,7 +176,6 @@
 
 
         }
-
 
         private void SetAxisLimits(System.DateTime now)
         {
@@ -196,23 +199,49 @@
             if (ChartValues.Count > 30) ChartValues.RemoveAt(0);
         }
 
+        private decimal GetSgaSize()
+        {
+            using (OracleConnection objConn = new OracleConnection("Data Source=localhost:1521/XE; User ID=dev; Password=dev"))
+            {
+                decimal sgaSize = 0;
 
+                OracleCommand objCmd = new OracleCommand();
+                objCmd.Connection = objConn;
+                objCmd.CommandText = "get_sga_size";
+                objCmd.CommandType = CommandType.StoredProcedure;
+                //objCmd.Parameters.Add("pin_deptno", OracleType.Number).Value = 20;
+                objCmd.Parameters.Add("return_value", OracleType.Number).Direction = ParameterDirection.ReturnValue;
 
+                try
+                {
+                    objConn.Open();
+                    objCmd.ExecuteNonQuery();
+                    sgaSize = (decimal) objCmd.Parameters["return_value"].Value;
+                    System.Console.WriteLine("Size of the SGA is {0}", objCmd.Parameters["return_value"].Value);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Exception: {0}", ex.ToString());
+                }
 
-
-
-        private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem opcionesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem cambiarHWMToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem bitacoraDeErroresToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem pruebasToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem exigirMemoriaToolStripMenuItem;
+                objConn.Close();
+                return sgaSize/1024/1024;
+            }
+        }
 
         private LiveCharts.WinForms.CartesianChart myChart;
+        private ToolStripMenuItem opcionesToolStripMenuItem;
+        private ToolStripMenuItem cambiarHWMToolStripMenuItem;
+        private ToolStripMenuItem bitacoraDeErroresToolStripMenuItem;
+        private ToolStripMenuItem pruebasToolStripMenuItem;
+        private ToolStripMenuItem exigirMemoriaToolStripMenuItem;
+        private MenuStrip menuStrip1;
+
         public ChartValues<MeasureModel> ChartValues { get; set; }
         public Timer Timer { get; set; }
         public Random R { get; set; }
 
     }
+
 }
 

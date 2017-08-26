@@ -5,8 +5,12 @@
     using LiveCharts;
     using LiveCharts.Configurations;
     using LiveCharts.Wpf;
-    using System.Data.OracleClient;
+    //using System.Data.OracleClient;
+    using Oracle.DataAccess.Client;
+    using Oracle.DataAccess.Types;
     using System.Data;
+    using System.Configuration;
+    using System.Windows.Media;
 
     partial class Application
     {
@@ -49,9 +53,10 @@
             // 
             // myChart
             // 
+            this.myChart.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(27)))), ((int)(((byte)(27)))));
             this.myChart.Location = new System.Drawing.Point(12, 27);
             this.myChart.Name = "myChart";
-            this.myChart.Size = new System.Drawing.Size(743, 373);
+            this.myChart.Size = new System.Drawing.Size(751, 373);
             this.myChart.TabIndex = 1;
             this.myChart.Text = "cartesianChart1";
             // 
@@ -92,6 +97,8 @@
             // 
             // menuStrip1
             // 
+            this.menuStrip1.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.opcionesToolStripMenuItem,
             this.pruebasToolStripMenuItem});
@@ -105,6 +112,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(27)))), ((int)(((byte)(27)))), ((int)(((byte)(27)))));
             this.ClientSize = new System.Drawing.Size(775, 412);
             this.Controls.Add(this.myChart);
             this.Controls.Add(this.menuStrip1);
@@ -113,6 +121,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "Application";
+            this.Opacity = 0.9D;
             this.Text = "Monitor de Memoria";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -123,7 +132,7 @@
 
         #endregion
 
-        private void InitChart(decimal sgaSize)
+        private void InitChart()
         {
             var mapper = Mappers.Xy<MeasureModel>()
                 .X(model => model.DateTime.Ticks)   //use DateTime.Ticks as X
@@ -141,27 +150,50 @@
                     Title  = "Carga de Memoria (MB)",
                     Values = ChartValues,
                     PointGeometrySize = 9,
-                    StrokeThickness = 3
+                    StrokeThickness = 3,
+                    Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(28, 142, 196)),
                 }
             };
             myChart.AxisX.Add(new Axis
             {
+                IsMerged = true,
+                Separator = new Separator
+                {
+                    StrokeThickness = 1,
+                    StrokeDashArray = new System.Windows.Media.DoubleCollection(2),
+                    Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(27,27,27)),
+                    Step = TimeSpan.FromSeconds(1).Ticks
+                },
+
                 Title = "Hora",
                 DisableAnimations = true,
                 LabelFormatter = value => new System.DateTime((long)value).ToString("mm:ss"),
-                Separator = new Separator
-                {
-                    Step = TimeSpan.FromSeconds(1).Ticks
-                }
             });
+
             myChart.AxisY.Add(new Axis
             {
+                IsMerged = true,
+                Separator = new Separator
+                {
+                    StrokeThickness = 1,
+                    StrokeDashArray = new System.Windows.Media.DoubleCollection(2),
+                    Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(27,27,27)),
+                },
+                Sections = new SectionsCollection
+                {
+                    new AxisSection
+                    {
+                        Value = Convert.ToDouble(sgaSize * Decimal.Parse(ConfigurationManager.AppSettings["highWaterMark"])),
+                        Stroke = new SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 213, 72)),
+                        StrokeThickness = 3
+                    }
+                },
                 Title = "Consumo de Memoria (MB)",
-                DisableAnimations = true,
+                DisableAnimations = true
             });
 
             myChart.AxisY[0].MinValue = 0;
-            myChart.AxisY[0].MaxValue = System.Convert.ToDouble(sgaSize);
+            myChart.AxisY[0].MaxValue = Convert.ToDouble(sgaSize);
 
             SetAxisLimits(System.DateTime.Now);
 
@@ -171,7 +203,6 @@
                 Interval = 1000
             };
             Timer.Tick += TimerOnTick;
-            R = new Random();
             Timer.Start();
 
 
@@ -190,7 +221,7 @@
             ChartValues.Add(new MeasureModel
             {
                 DateTime = now,
-                Value = R.Next(0, 10)
+                Value = Convert.ToDouble(GetUsedMemory())
             });
 
             SetAxisLimits(now);
@@ -201,23 +232,26 @@
 
         private decimal GetSgaSize()
         {
-            using (OracleConnection objConn = new OracleConnection("Data Source=localhost:1521/XE; User ID=dev; Password=dev"))
+            using (OracleConnection objConn = new OracleConnection(ConfigurationManager.AppSettings["connectionString"]))
             {
                 decimal sgaSize = 0;
 
+                // Create and execute the command
                 OracleCommand objCmd = new OracleCommand();
                 objCmd.Connection = objConn;
                 objCmd.CommandText = "get_sga_size";
                 objCmd.CommandType = CommandType.StoredProcedure;
-                //objCmd.Parameters.Add("pin_deptno", OracleType.Number).Value = 20;
-                objCmd.Parameters.Add("return_value", OracleType.Number).Direction = ParameterDirection.ReturnValue;
+
+                // Set parameters
+                OracleParameter retParam = objCmd.Parameters.Add("return_value", OracleDbType.Decimal, ParameterDirection.ReturnValue);
+                //objCmd.Parameters.Add("return_value", OracleDbType.Int32, sgaSize, System.Data.ParameterDirection.Input);
 
                 try
                 {
                     objConn.Open();
                     objCmd.ExecuteNonQuery();
-                    sgaSize = (decimal) objCmd.Parameters["return_value"].Value;
-                    System.Console.WriteLine("Size of the SGA is {0}", objCmd.Parameters["return_value"].Value);
+                    sgaSize = (decimal)((OracleDecimal)retParam.Value);
+                    //System.Console.WriteLine("Size of the SGA is {0}", retParam.Value);
                 }
                 catch (Exception ex)
                 {
@@ -225,7 +259,42 @@
                 }
 
                 objConn.Close();
-                return sgaSize/1024/1024;
+                objConn.Dispose();
+                return sgaSize;
+            }
+        }
+
+        private decimal GetUsedMemory()
+        {
+            using (OracleConnection objConn = new OracleConnection(ConfigurationManager.AppSettings["connectionString"]))
+            {
+                decimal usedMem = 0;
+
+                // Create and execute the command
+                OracleCommand objCmd = new OracleCommand();
+                objCmd.Connection = objConn;
+                objCmd.CommandText = "get_used_memory";
+                objCmd.CommandType = CommandType.StoredProcedure;
+
+                // Set parameters
+                OracleParameter retParam = objCmd.Parameters.Add("return_value", OracleDbType.Decimal, ParameterDirection.ReturnValue);
+                //objCmd.Parameters.Add("return_value", OracleDbType.Int32, sgaSize, System.Data.ParameterDirection.Input);
+
+                try
+                {
+                    objConn.Open();
+                    objCmd.ExecuteNonQuery();
+                    usedMem = (decimal)((OracleDecimal)retParam.Value);
+                    //System.Console.WriteLine("Memory Usage is {0}", retParam.Value);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Exception: {0}", ex.ToString());
+                }
+
+                objConn.Close();
+                objConn.Dispose();
+                return usedMem;
             }
         }
 
@@ -239,7 +308,8 @@
 
         public ChartValues<MeasureModel> ChartValues { get; set; }
         public Timer Timer { get; set; }
-        public Random R { get; set; }
+        private decimal sgaSize;
+
 
     }
 

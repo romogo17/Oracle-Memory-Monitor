@@ -10,14 +10,13 @@ using System.Windows.Forms;
 
 namespace Oracle_Memory_Monitor
 {
-    public partial class ChangeHWM : Form
+    public partial class AlertasHWM : Form
     {
-        public ChangeHWM(Application application, decimal current)
+        public AlertasHWM(Application application)
         {
             InitializeComponent();
             app = application;
-            curr = current*100;
-            this.numericUpDown1.Value = current*100;
+            data = new DataSet();
         }
     }
 }

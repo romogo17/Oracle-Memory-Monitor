@@ -16,9 +16,11 @@ namespace Oracle_Memory_Monitor
         public Application()
         {
             sgaSize = GetSgaSize();
+            enAlerta = false;
             hwm = Decimal.Parse(ConfigurationManager.AppSettings["highWaterMark"]);
             InitializeComponent();
             InitChart();
         }
+
     }
 }

@@ -13,6 +13,8 @@
     using System.Data;
     using System.Configuration;
     using System.Windows.Media;
+    using System.IO;
+    using System.Reflection;
 
     partial class Application
     {
@@ -86,15 +88,16 @@
             // cambiarHWMToolStripMenuItem
             // 
             this.cambiarHWMToolStripMenuItem.Name = "cambiarHWMToolStripMenuItem";
-            this.cambiarHWMToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
+            this.cambiarHWMToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
             this.cambiarHWMToolStripMenuItem.Text = "Cambiar HWM";
             this.cambiarHWMToolStripMenuItem.Click += new System.EventHandler(this.cambiarHWMToolStripMenuItem_Click);
             // 
             // bitacoraDeErroresToolStripMenuItem
             // 
             this.bitacoraDeErroresToolStripMenuItem.Name = "bitacoraDeErroresToolStripMenuItem";
-            this.bitacoraDeErroresToolStripMenuItem.Size = new System.Drawing.Size(172, 22);
-            this.bitacoraDeErroresToolStripMenuItem.Text = "Bitacora de Errores";
+            this.bitacoraDeErroresToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.bitacoraDeErroresToolStripMenuItem.Text = "Alertas";
+            this.bitacoraDeErroresToolStripMenuItem.Click += new System.EventHandler(this.bitacoraDeErroresToolStripMenuItem_Click);
             // 
             // menuStrip1
             // 
@@ -411,9 +414,25 @@
                 label10.Text = Convert.ToString(row["HASH_VALUE"]);
                 label11.Text = (string)row["SQL_FULLTEXT"];
                 label13.Text = Convert.ToString(Convert.ToDouble(row["ELAPSED_TIME"])*0.000001);
-
-                //System.Console.WriteLine("SQL -----> {0}", GetMostExpensiveSql().Tables[0].Rows[0]["SQL_ID"]);
             }
+
+            // verificar si hay una nueva alerta
+            if(usedMemory > Convert.ToDouble(sgaSize * hwm))
+            {
+                if (!enAlerta)
+                {
+                    enAlerta = true;
+
+                    string exeRuntimeDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    string subDirectory = System.IO.Path.Combine(exeRuntimeDirectory, "alertas");
+                    if (!System.IO.Directory.Exists(subDirectory))
+                    {
+                        System.IO.Directory.CreateDirectory(subDirectory);
+                    }
+                    GetUsersAtAlert().WriteXml(subDirectory + "\\" + now.ToFileTime() + ".xml");
+
+                }
+            } else { enAlerta = false; }
 
             //lets only use the last 30 values
             if (ChartValues.Count > 30) ChartValues.RemoveAt(0);
@@ -526,19 +545,65 @@
             }
         }
 
+        private DataSet GetUsersAtAlert()
+        {
+            using (OracleConnection objConn = new OracleConnection(ConfigurationManager.AppSettings["connectionString"]))
+            {
+                DataSet userInfo = new DataSet("alerta");
+
+                // Create and execute the command
+                OracleCommand objCmd = new OracleCommand();
+                objCmd.Connection = objConn;
+                objCmd.CommandText = "get_most_expensive_sql";
+                objCmd.CommandType = CommandType.StoredProcedure;
+
+                // Set parameters
+                OracleParameter retParam = objCmd.Parameters.Add("return_value", OracleDbType.RefCursor, ParameterDirection.ReturnValue);
+                //objCmd.Parameters.Add("return_value", OracleDbType.Int32, sgaSize, System.Data.ParameterDirection.Input);
+
+                try
+                {
+                    objConn.Open();
+                    objCmd.ExecuteNonQuery();
+
+                    OracleDataAdapter a = new OracleDataAdapter(objCmd);
+                    a.TableMappings.Add("MyTable", "sample_table"); // possible need for this
+                    a.Fill(userInfo);
+
+                    //return sqlInfo;
+                    //System.Console.WriteLine("Memory Usage is {0}", retParam.Value);
+                }
+                catch (Exception ex)
+                {
+                    System.Console.WriteLine("Exception: {0}", ex.ToString());
+                }
+
+                objConn.Close();
+                objConn.Dispose();
+                return userInfo;
+            }
+        }
+
         private void cambiarHWMToolStripMenuItem_Click(object sender, EventArgs e)
         {
             ChangeHWM ch = new ChangeHWM(this, hwm);
-            ch.Show();
-            //this.Hide();
+            ch.ShowDialog(this);
+        }
+
+        private void bitacoraDeErroresToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AlertasHWM ah = new AlertasHWM(this);
+            ah.ShowDialog(this);
         }
 
         public void RedrawHWM(double percentage)
         {
-            //System.Console.WriteLine("Percentage {0}", percentage);
             myChart.AxisY[0].Sections[0].Value = Convert.ToDouble(sgaSize * (decimal) percentage);
             hwm = (decimal) percentage;
         }
+
+
+
 
         private LiveCharts.WinForms.CartesianChart myChart;
         private ToolStripMenuItem opcionesToolStripMenuItem;
@@ -564,6 +629,8 @@
         private Label label11;
         private Label label13;
         private Label label14;
+
+        private bool enAlerta;
     }
 
 }

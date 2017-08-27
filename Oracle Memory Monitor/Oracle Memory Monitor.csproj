@@ -67,6 +67,9 @@
     <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
       <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="Oracle.ManagedDataAccess, Version=4.122.1.0, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
       <HintPath>..\packages\Oracle.ManagedDataAccess.12.2.1100\lib\net40\Oracle.ManagedDataAccess.dll</HintPath>
       <Private>True</Private>
@@ -104,6 +107,12 @@
     <Compile Include="Application.Designer.cs">
       <DependentUpon>Application.cs</DependentUpon>
     </Compile>
+    <Compile Include="AlertasHWM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AlertasHWM.Designer.cs">
+      <DependentUpon>AlertasHWM.cs</DependentUpon>
+    </Compile>
     <Compile Include="ChangeHWM.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,6 +124,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Application.resx">
       <DependentUpon>Application.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AlertasHWM.resx">
+      <DependentUpon>AlertasHWM.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ChangeHWM.resx">
       <DependentUpon>ChangeHWM.cs</DependentUpon>

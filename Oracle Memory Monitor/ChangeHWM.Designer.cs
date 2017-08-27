@@ -1,4 +1,6 @@
-﻿namespace Oracle_Memory_Monitor
+﻿using System;
+
+namespace Oracle_Memory_Monitor
 {
     partial class ChangeHWM
     {
@@ -101,6 +103,28 @@
         }
 
         #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            decimal pct = this.numericUpDown1.Value;
+            if (pct > 0 && pct < 100)
+            {
+                app.RedrawHWM(Convert.ToDouble(pct / 100));
+                this.Close();
+                this.Dispose();
+            }
+            else
+            {
+                System.Media.SystemSounds.Exclamation.Play();
+                this.numericUpDown1.Value = curr;
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            this.Dispose();
+        }
 
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown numericUpDown1;

@@ -6,8 +6,10 @@
     using LiveCharts.Configurations;
     using LiveCharts.Wpf;
     //using System.Data.OracleClient;
-    using Oracle.DataAccess.Client;
-    using Oracle.DataAccess.Types;
+    //using Oracle.DataAccess.Client;
+    //using Oracle.DataAccess.Types;
+    using Oracle.ManagedDataAccess.Client;
+    using Oracle.ManagedDataAccess.Types;
     using System.Data;
     using System.Configuration;
     using System.Windows.Media;

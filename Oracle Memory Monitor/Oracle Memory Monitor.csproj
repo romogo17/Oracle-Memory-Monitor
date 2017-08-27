@@ -95,11 +95,20 @@
     <Compile Include="Application.Designer.cs">
       <DependentUpon>Application.cs</DependentUpon>
     </Compile>
+    <Compile Include="ChangeHWM.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ChangeHWM.Designer.cs">
+      <DependentUpon>ChangeHWM.cs</DependentUpon>
+    </Compile>
     <Compile Include="MeasureModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Application.resx">
       <DependentUpon>Application.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ChangeHWM.resx">
+      <DependentUpon>ChangeHWM.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

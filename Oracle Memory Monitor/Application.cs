@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Configuration;
 
 namespace Oracle_Memory_Monitor
 {
@@ -14,8 +15,9 @@ namespace Oracle_Memory_Monitor
     {
         public Application()
         {
-            InitializeComponent();
             sgaSize = GetSgaSize();
+            hwm = Decimal.Parse(ConfigurationManager.AppSettings["highWaterMark"]);
+            InitializeComponent();
             InitChart();
         }
     }

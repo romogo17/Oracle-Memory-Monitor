@@ -86,14 +86,16 @@
             // cambiarHWMToolStripMenuItem
             // 
             this.cambiarHWMToolStripMenuItem.Name = "cambiarHWMToolStripMenuItem";
-            this.cambiarHWMToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.cambiarHWMToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.H)));
+            this.cambiarHWMToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.cambiarHWMToolStripMenuItem.Text = "Cambiar HWM";
             this.cambiarHWMToolStripMenuItem.Click += new System.EventHandler(this.cambiarHWMToolStripMenuItem_Click);
             // 
             // bitacoraDeErroresToolStripMenuItem
             // 
             this.bitacoraDeErroresToolStripMenuItem.Name = "bitacoraDeErroresToolStripMenuItem";
-            this.bitacoraDeErroresToolStripMenuItem.Size = new System.Drawing.Size(153, 22);
+            this.bitacoraDeErroresToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.bitacoraDeErroresToolStripMenuItem.Size = new System.Drawing.Size(196, 22);
             this.bitacoraDeErroresToolStripMenuItem.Text = "Alertas";
             this.bitacoraDeErroresToolStripMenuItem.Click += new System.EventHandler(this.bitacoraDeErroresToolStripMenuItem_Click);
             // 

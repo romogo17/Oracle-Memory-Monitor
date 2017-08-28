@@ -98,21 +98,24 @@ namespace Oracle_Memory_Monitor
             // abrirAlertaToolStripMenuItem
             // 
             this.abrirAlertaToolStripMenuItem.Name = "abrirAlertaToolStripMenuItem";
-            this.abrirAlertaToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.abrirAlertaToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.abrirAlertaToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.abrirAlertaToolStripMenuItem.Text = "Abrir";
             this.abrirAlertaToolStripMenuItem.Click += new System.EventHandler(this.abrirAlertaToolStripMenuItem_Click);
             // 
             // agregarToolStripMenuItem
             // 
             this.agregarToolStripMenuItem.Name = "agregarToolStripMenuItem";
-            this.agregarToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.agregarToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.agregarToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.agregarToolStripMenuItem.Text = "Agregar";
             this.agregarToolStripMenuItem.Click += new System.EventHandler(this.agregarToolStripMenuItem_Click);
             // 
             // guardarComoToolStripMenuItem
             // 
             this.guardarComoToolStripMenuItem.Name = "guardarComoToolStripMenuItem";
-            this.guardarComoToolStripMenuItem.Size = new System.Drawing.Size(150, 22);
+            this.guardarComoToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.guardarComoToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.guardarComoToolStripMenuItem.Text = "Guardar como";
             this.guardarComoToolStripMenuItem.Click += new System.EventHandler(this.guardarComoToolStripMenuItem_Click);
             // 

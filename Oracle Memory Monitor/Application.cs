@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using System.Threading;
 
 namespace Oracle_Memory_Monitor
 {
@@ -20,6 +21,7 @@ namespace Oracle_Memory_Monitor
             hwm = Decimal.Parse(ConfigurationManager.AppSettings["highWaterMark"]);
             InitializeComponent();
             InitChart();
+            Thread.Sleep(2000);
         }
 
     }

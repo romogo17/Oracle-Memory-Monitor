@@ -267,6 +267,7 @@
             this.MaximizeBox = false;
             this.Name = "Application";
             this.Opacity = 0.9D;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Monitor de Memoria";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();

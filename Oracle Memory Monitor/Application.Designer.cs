@@ -384,11 +384,22 @@
                 //label3.Text = now.ToString("hh:mm");
                 label3.Text = now.ToShortTimeString();
 
-                DataRow row = GetUsersAtAlert().Tables[0].Rows[0];
-                label6.Text = (string)row["USERNAME"];
-                label8.Text = (string)row["SQL_ID"];
-                label10.Text = Convert.ToString(row["HASH_VALUE"]);
-                label13.Text = Convert.ToString(Convert.ToDouble(row["MEMORY"])/1024);
+                DataSet ds = GetUsersAtAlert();
+
+                bool flag = false;
+                if (ds.Tables.Count == 0) flag = true;
+                else if (!(ds.Tables[0].Rows.Count > 0)) flag = true;
+                if (!flag)
+                {
+                    DataRow row = ds.Tables[0].Rows[0];
+                    label6.Text = (string)row["USERNAME"];
+                    label8.Text = (string)row["SQL_ID"];
+                    label10.Text = Convert.ToString(row["HASH_VALUE"]);
+                    label13.Text = Convert.ToString(Convert.ToDouble(row["MEMORY"]) / 1024);
+                }
+
+
+                
             }
 
             // verificar si hay una nueva alerta

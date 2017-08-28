@@ -22,4 +22,5 @@ Este repositorio funciona como el control de versiones del laboratorio de Monito
   - Permite guardar el contenido de la tabla en tanto .xml como .JSON en **Opciones > Guardar Como**
   
   ## Instrucciones de Instalacion 
-  Para la instalacion del Monitor, visitar la [Guia de Instalacion] (https://github.com/romogo17/Oracle-Memory-Monitor/wiki/Instrucciones-de-Instalacion)
+  Para la instalacion del Monitor, visitar la 
+  [Guia de Instalacion](https://github.com/romogo17/Oracle-Memory-Monitor/wiki/Instrucciones-de-Instalacion)

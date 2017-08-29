@@ -12,8 +12,14 @@ namespace Oracle_Memory_Monitor
 {
     public partial class ChangeHWM : Form
     {
-        public ChangeHWM(Application application, decimal current)
+        public ChangeHWM(Application application, decimal c)
         {
+            var current = c;
+            while(current > 100)
+            {
+                current = current / 10;
+            }
+
             InitializeComponent();
             app = application;
             curr = current*100;

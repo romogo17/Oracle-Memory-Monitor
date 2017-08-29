@@ -112,6 +112,7 @@ namespace Oracle_Memory_Monitor
             decimal pct = this.numericUpDown1.Value;
             if (pct > 0 && pct < 100)
             {
+                //System.Console.WriteLine("Porcentaje {0} y current {1}", pct, curr);
                 app.RedrawHWM(Convert.ToDouble(pct / 100));
                 this.Close();
                 this.Dispose();

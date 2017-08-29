@@ -582,8 +582,14 @@
             ah.ShowDialog(this);
         }
 
-        public void RedrawHWM(double percentage)
+        public void RedrawHWM(double pct)
         {
+            double percentage = pct;
+            while (percentage > 1)
+            {
+                percentage = percentage / 10;
+            }
+
             myChart.AxisY[0].Sections[0].Value = Convert.ToDouble(sgaSize * (decimal) percentage);
             hwm = (decimal) percentage;
         }

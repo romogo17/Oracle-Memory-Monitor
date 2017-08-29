@@ -172,7 +172,9 @@
   <ItemGroup>
     <Content Include="icon.ico" />
     <None Include="OraMemMonitorLoading.png" />
-    <None Include="Resources\LoadingScreen.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

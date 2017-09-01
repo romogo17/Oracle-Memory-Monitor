@@ -53,7 +53,7 @@ namespace Oracle_Memory_Monitor
             }
 
             splashForm.Invoke(new Action(splashForm.Close));
-            splashForm.Dispose();
+            //splashForm.Dispose();
             splashForm = null;
         }
     }
